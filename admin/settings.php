@@ -2,28 +2,12 @@
 /**
  * Register Settings Page.
  *
- * @package Qoin Graph
+ * @package QoinGraph
  */
 
 namespace QoinGraph\Admin;
 
-/**
- * List of setting fields for a country setting.
- */
-function setting_fields() {
-	$options = array(
-		'currencies' => array(
-			'id'       => 'qoin_graph_currencies',
-			'title'    => __( 'Currencies', 'qoin-graph' ),
-			'callback' => __NAMESPACE__ . '\render_currencies_setting',
-			'page'     => 'qoin-graph-settings',
-			'section'  => 'qoin-graph-settings-section',
-			'sanitize' => 'sanitize_text_field',
-		),
-	);
-
-	return $options;
-}
+use const QoinGraph\OPTION_NAME;
 
 /**
  * Adds a new menu page for plugin options.
@@ -53,12 +37,12 @@ function render_settings_page() {
 
 	?>
 	<div class="wrap">
-		<h2 class="wc-table-list-header"><?php echo esc_html__( 'Qoin Graph Settings', 'qoin-graph' ); ?></h2>
+		<h2 class="wc-table-list-header"><?php echo esc_html__( 'Qoin Graph', 'qoin-graph' ); ?></h2>
 
 		<form method="post" class="country-rollout-form" action="options.php">
 			<?php settings_fields( \QoinGraph\OPTION_GROUP ); ?>
 			<?php do_settings_sections( 'qoin-graph-settings' ); ?>
-			<?php submit_button(); ?>
+			<?php //submit_button(); ?>
 		</form>
 	</div>
 	<?php
@@ -78,39 +62,99 @@ function settings_api_init() {
 	);
 
 	add_settings_section(
-		'qoin-graph-settings-section',
-		__( 'Qoin Graph Settings', 'qoin-graph' ),
-		__NAMESPACE__ . '\setting_section_callback',
+		'qoin-graph-currencies-section',
+		__( 'Currencies', 'qoin-graph' ),
+		__NAMESPACE__ . '\currencies_section_callback',
 		'qoin-graph-settings',
 	);
-
-	$fields = setting_fields();
-
-	// Register each option as a settings field.
-	foreach ( $fields as $field ) {
-		add_settings_field(
-			$field['id'],
-			$field['title'],
-			$field['callback'],
-			$field['page'],
-			$field['section'],
-		);
-	}
 }
 
 /**
- * Section callback.
+ * Currencies section callback.
  */
-function setting_section_callback() {
+function currencies_section_callback() {
+	$settings   = get_option( OPTION_NAME );
+	$currencies = isset( $settings['currencies'] ) ? $settings['currencies'] : array();
+
 	?>
-	<p><?php echo esc_html__( 'Various settings for configuring the Qoin Graph.', 'qoin-graph' ); ?></p>
+	<p><?php echo esc_html__( 'Add or remove currencies.', 'qoin-graph' ); ?></p>
+	<div class="field-section">
+		<fieldset id="add-currency">
+			<legend class="screen-reader-text"><?php echo esc_html__( 'Add Currency', 'qoin-graph' ); ?></legend>
+			<div class="form-field">
+				<label for="currency-code"><?php echo esc_html__( 'Currency Code', 'qoin-graph' ); ?></label>
+				<input type="text" size="10" id="currency-code" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][code]' ); ?>" class="input" aria-required="true">
+			</div>
+			<div class="form-field">
+				<label for="currency-symbol"><?php echo esc_html__( 'Currency Symbol', 'qoin-graph' ); ?></label>
+				<input type="text" size="10" id="currency-symbol" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][symbol]' ); ?>" class="input" aria-required="true">
+			</div>
+			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary"><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
+		</fieldset>
+		<!-- Only display table if at least one currency has been added -->
+		<div id="new-currency-notice" class="notice notice-success is-dismissible hidden" role="alert" tabindex="-1">
+			<p class="notice-message"></p>
+			<button type="button" class="notice-dismiss">
+				<span class="screen-reader-text">Dismiss this notice.</span>
+			</button>
+		</div>
+		<table id="currency-table" class="wp-list-table widefat fixed striped table-view-list <?php echo empty( $currencies ) ? 'hidden' : ''; ?>">
+			<thead>
+				<tr>
+					<th scope="col" id="currency-code" class="manage-column column-name column-primary">Currency Code</th>
+					<th scope="col" id="currency-symbol" class="manage-column column-created">Currency Symbol</th>
+					<th scope="col" id="currency-delete" class="manage-column column-created">Delete</th>
+				</tr>
+			</thead>
+
+			<tbody id="the-list">
+				<tr id="clone-row" class="hidden">
+					<td class="currency-row__code"></td>
+					<td class="currency-row__symbol"></td>
+					<td class="currency-row__btn"><button class="button delete"><?php echo esc_html__( 'Delete', 'qoin-graph' ); ?></button></td>
+				</tr>
+
+				<?php
+				if ( ! empty( $currencies ) ) {
+					foreach ( $currencies as $code => $symbol ) {
+						?>
+						<tr class="currency-row">
+							<td class="currency-row__code"><?php echo esc_html( $code ); ?></td>
+							<td class="currency-row__symbol"><?php echo esc_html( $symbol ); ?></td>
+							<td class="currency-row__btn"><button class="button delete"><?php echo esc_html__( 'Delete', 'qoin-graph' ); ?></button></td>
+						</tr>
+						<?php
+					}
+				}
+				?>
+			</tbody>		
+		</table>
+	</div>
 	<?php
 }
 
 /**
- * Currencies setting callback.
+ * Sanitize form inputs.
+ * 
+ * @param array $values Form Inputs.
+ * 
+ * @return array
  */
-function render_currencies_setting() {}
+function sanitize( $values ) {
+	static $has_validated = false;
+
+	if ( $has_validated ) {
+		return $values;
+	}
+
+	$current_settings                                 = get_option( OPTION_NAME ) ?: array();
+	$currency_code                                    = sanitize_text_field( $values['currencies']['code'] );
+	$currency_symbol                                  = sanitize_text_field( $values['currencies']['symbol'] );
+	$current_settings['currencies'][ $currency_code ] = $currency_symbol;
+	$has_validated                                    = true;
+	
+	return $current_settings;
+}
 
 // Hooks.
 add_action( 'admin_menu', __NAMESPACE__ . '\init_admin_menu' );
