@@ -9,7 +9,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: qoin-graph
  *
- * @package Qoin Graph
+ * @package QoinGraph
  */
 
 namespace QoinGraph;
