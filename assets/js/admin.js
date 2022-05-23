@@ -58,6 +58,8 @@
 				if ( ! newRow ) {
 					throw new Error('Could not create new row.');
 				}
+
+				tableBody.appendChild(newRow);
 				
 				// Clear input fields
 				currencyCodeEl.value = '';
