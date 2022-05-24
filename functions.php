@@ -11,8 +11,7 @@ namespace QoinGraph;
  * Enqueue admin-related scripts and styles.
  */
 function enqueue_admin_scripts() {
-	wp_enqueue_script( 'qoin-graph-select2', plugin_dir_url( __FILE__ ) . 'assets/js/select2.min.js', array( 'jquery' ), '4.0.13' ); //phpcs:ignore
-	wp_enqueue_script( 'qoin-graph-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.js', array( 'jquery', 'qoin-graph-select2' ), '1.0.0', true );
+	wp_enqueue_script( 'qoin-graph-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
 	wp_add_inline_script(
 		'qoin-graph-admin',
 		sprintf(
@@ -22,8 +21,6 @@ function enqueue_admin_scripts() {
 		),
 		'before'
 	);
-
-	wp_enqueue_style( 'qoin-graph-select2-style', plugin_dir_url( __FILE__ ) . 'assets/css/select2.min.css', array(), '4.0.13' ); 
 }
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 
