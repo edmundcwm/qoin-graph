@@ -6,9 +6,12 @@
 	const currencyCodeEl = document.getElementById( 'currency-code' );
 	const currencySymbolEl = document.getElementById( 'currency-symbol' );
 
-	if ( ! addCurrencyBtn || ! currencyTable || ! rowClone || ! tableBody || ! currencyCodeEl || ! currencySymbolEl ) {
+	if ( ! addCurrencyBtn || ! currencyTable || ! rowClone || ! tableBody || ! currencyCodeEl || ! currencySymbolEl || undefined === qoinGraphSettings.root ) {
 		return;
 	}
+
+	const endpoint = '/wp-json/qoin-graph/v1/currencies';
+	const url = qoinGraphSettings.root + endpoint;
 
 	/**
 	 * Create a new row in the currency table.
@@ -39,9 +42,6 @@
 	 * Handle adding of new currency.
 	 */
 	async function handleAddCurrency() {
-		const endpoint = '/wp-json/qoin-graph/v1/currencies';
-		const url = qoinGraphSettings.root + endpoint; //eslint-disable-line no-undef
-
 		try {
 			const response = await fetch( url, {
 				method: 'POST',
@@ -92,8 +92,6 @@
 		}
 
 		try {
-			const endpoint = '/wp-json/qoin-graph/v1/currencies';
-			const url = qoinGraphSettings.root + endpoint; //eslint-disable-line no-undef
 			const response = await fetch( url, {
 				method: 'DELETE',
 				headers: {
