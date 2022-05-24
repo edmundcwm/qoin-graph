@@ -108,7 +108,7 @@ function currencies_section_callback() {
 			</thead>
 
 			<tbody id="the-list">
-				<tr id="clone-row" class="hidden">
+				<tr id="clone-row" class="hidden currency-row">
 					<td class="currency-row__code"></td>
 					<td class="currency-row__symbol"></td>
 					<td class="currency-row__btn"><button class="button delete"><?php echo esc_html__( 'Delete', 'qoin-graph' ); ?></button></td>

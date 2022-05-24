@@ -6,7 +6,7 @@
 	const currencyCodeEl = document.getElementById( 'currency-code' );
 	const currencySymbolEl = document.getElementById( 'currency-symbol' );
 
-	if ( ! addCurrencyBtn || ! currencyTable || rowClone || tableBody || currencyCodeEl || currencySymbolEl ) {
+	if ( ! addCurrencyBtn || ! currencyTable || ! rowClone || ! tableBody || ! currencyCodeEl || ! currencySymbolEl ) {
 		return;
 	}
 
@@ -22,13 +22,15 @@
 
 		const currencyCode = newRow.querySelector( '.currency-row__code' );
 		const currencySymbol = newRow.querySelector( '.currency-row__symbol' );
+		const deleteBtn = newRow.querySelector( '.button.delete' );
 
-		if ( ! currencyCode || ! currencySymbol ) {
+		if ( ! currencyCode || ! currencySymbol || ! deleteBtn ) {
 			return false;
 		}
 
 		currencyCode.textContent = currencyCodeEl.value.toUpperCase();
 		currencySymbol.textContent = currencySymbolEl.value;
+		deleteBtn.dataset.code = currencyCodeEl.value.toUpperCase();
 
 		return newRow;
 	}
@@ -77,16 +79,47 @@
 		}
 	}
 
+	/**
+	 * Handle deleting of currency.
+	 *
+	 * @param {Event} event
+	 */
 	async function handleDeleteCurrency( event ) {
 		event.preventDefault();
-		if ( 'BUTTON' !== event.target.tagName || ! event.target.classList.contains( 'delete' ) ) {
 
+		if ( 'BUTTON' !== event.target.tagName || ! event.target.classList.contains( 'delete' ) ) {
+			return;
+		}
+
+		try {
+			const endpoint = '/wp-json/qoin-graph/v1/currencies';
+			const url = qoinGraphSettings.root + endpoint; //eslint-disable-line no-undef
+			const response = await fetch( url, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': qoinGraphSettings.nonce, //eslint-disable-line no-undef
+				},
+				body: JSON.stringify( {
+					currencyCode: event.target.dataset.code,
+				} ),
+			} );
+
+			await response.json();
+
+			// Delete the row from the table after a successful response.
+			if ( response.ok ) {
+				const rowEl = event.target.parentElement.parentElement;
+				if ( rowEl.classList.contains( 'currency-row' ) ) {
+					rowEl.remove();
+				}
+			}
+		} catch ( err ) {
+			// Display error message.
+			console.error( err.message );
 		}
 	}
 
 	addCurrencyBtn.addEventListener( 'click', handleAddCurrency );
-
 	currencyTable.addEventListener( 'click', handleDeleteCurrency );
-
-	//TODO Delete currency
 }() );

@@ -43,6 +43,10 @@ function qoin_graph_rest_route() {
 				'methods'  => \WP_REST_Server::EDITABLE,
 				'callback' => __NAMESPACE__ . '\\update_qoin_graph_currencies',
 			),
+			array(
+				'methods'  => \WP_REST_Server::DELETABLE,
+				'callback' => __NAMESPACE__ . '\\delete_qoin_graph_currencies',
+			),
 		) 
 	);
 }
@@ -81,3 +85,28 @@ function update_qoin_graph_currencies( $request ) {
 
 }
 add_action( 'rest_api_init', __NAMESPACE__ . '\\qoin_graph_rest_route' );
+
+/**
+ * DELETE method callback.
+ * 
+ * @param \WP_REST_Request $request REST request.
+ */
+function delete_qoin_graph_currencies( $request ) {
+	$settings   = get_option( OPTION_NAME, array() );
+	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	
+	if ( empty( $currencies ) ) {
+		return new \WP_Error( 'cant-delete', __( 'No currencies to delete.', 'qoin-graph' ), array( 'status' => 404 ) );
+	}
+	$values             = $request->get_json_params();
+	$currency_to_remove = sanitize_text_field( $values['currencyCode'] );
+
+	if ( isset( $currencies[ $currency_to_remove ] ) ) {
+		unset( $currencies[ $currency_to_remove ] );
+	}
+
+	$settings['currencies'] = $currencies;
+	$result                 = update_option( OPTION_NAME, $settings );
+
+	return $result ? new \WP_REST_Response( 'Currency deleted successfuly', 200 ) : new \WP_Error( 'cant-delete', __( 'Unable to delete currency', 'qoin-graph' ), array( 'status' => 404 ) );
+}
