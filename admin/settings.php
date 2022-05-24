@@ -89,7 +89,7 @@ function currencies_section_callback() {
 				<label for="currency-symbol"><?php echo esc_html__( 'Currency Symbol', 'qoin-graph' ); ?></label>
 				<input type="text" size="10" id="currency-symbol" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][symbol]' ); ?>" class="input" aria-required="true">
 			</div>
-			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary"><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
+			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary" data-code=""><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
 		</fieldset>
 		<!-- Only display table if at least one currency has been added -->
 		<div id="new-currency-notice" class="notice notice-success is-dismissible hidden" role="alert" tabindex="-1">
@@ -121,7 +121,7 @@ function currencies_section_callback() {
 						<tr class="currency-row">
 							<td class="currency-row__code"><?php echo esc_html( $code ); ?></td>
 							<td class="currency-row__symbol"><?php echo esc_html( $symbol ); ?></td>
-							<td class="currency-row__btn"><button class="button delete"><?php echo esc_html__( 'Delete', 'qoin-graph' ); ?></button></td>
+							<td class="currency-row__btn"><button class="button delete" data-code="<?php echo esc_attr( $code ); ?>"><?php echo esc_html__( 'Delete', 'qoin-graph' ); ?></button></td>
 						</tr>
 						<?php
 					}
