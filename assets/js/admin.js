@@ -43,6 +43,8 @@
 	 */
 	async function handleAddCurrency() {
 		try {
+			addCurrencyBtn.classList.add( 'disabled' );
+
 			const response = await fetch( url, {
 				method: 'POST',
 				headers: {
@@ -75,7 +77,10 @@
 				currencySymbolEl.value = '';
 			}
 		} catch ( err ) {
+			//TODO display error notice.
 			console.error( err.message );
+		} finally {
+			addCurrencyBtn.classList.remove( 'disabled' );
 		}
 	}
 
