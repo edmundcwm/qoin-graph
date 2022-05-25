@@ -42,6 +42,10 @@
 	 * Handle adding of new currency.
 	 */
 	async function handleAddCurrency() {
+		if ( addCurrencyBtn.classList.contains( 'disabled' ) ) {
+			return;
+		}
+
 		try {
 			addCurrencyBtn.classList.add( 'disabled' );
 
