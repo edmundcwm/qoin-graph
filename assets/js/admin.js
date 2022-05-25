@@ -92,34 +92,39 @@
 	async function handleDeleteCurrency( event ) {
 		event.preventDefault();
 
-		if ( 'BUTTON' !== event.target.tagName || ! event.target.classList.contains( 'delete' ) ) {
+		if ( 'BUTTON' !== event.target.tagName || ! event.target.classList.contains( 'delete' ) || event.target.classList.contains( 'disabled' ) ) {
 			return;
 		}
 
-		try {
-			const response = await fetch( url, {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': qoinGraphSettings.nonce, //eslint-disable-line no-undef
-				},
-				body: JSON.stringify( {
-					currencyCode: event.target.dataset.code,
-				} ),
-			} );
+		if ( window.confirm( 'Are you sure you want to delete this currency?' ) ) { //eslint-disable-line no-alert
+			try {
+				event.target.classList.toggle( 'disabled' );
+				const response = await fetch( url, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': qoinGraphSettings.nonce, //eslint-disable-line no-undef
+					},
+					body: JSON.stringify( {
+						currencyCode: event.target.dataset.code,
+					} ),
+				} );
 
-			await response.json();
+				await response.json();
 
-			// Delete the row from the table after a successful response.
-			if ( response.ok ) {
-				const rowEl = event.target.parentElement.parentElement;
-				if ( rowEl.classList.contains( 'currency-row' ) ) {
-					rowEl.remove();
+				// Delete the row from the table after a successful response.
+				if ( response.ok ) {
+					const rowEl = event.target.parentElement.parentElement;
+					if ( rowEl.classList.contains( 'currency-row' ) ) {
+						rowEl.remove();
+					}
 				}
+			} catch ( err ) {
+				// Display error message.
+				console.error( err.message );
+			} finally {
+				event.target.classList.toggle( 'disabled' );
 			}
-		} catch ( err ) {
-			// Display error message.
-			console.error( err.message );
 		}
 	}
 
