@@ -78,8 +78,8 @@ function currencies_section_callback() {
 
 	?>
 	<p><?php echo esc_html__( 'Add or remove currencies.', 'qoin-graph' ); ?></p>
-	<div class="field-section">
-		<fieldset id="add-currency">
+	<div class="field-wrapper">
+		<fieldset id="add-currency" class="field-section field-section--sm">
 			<legend class="screen-reader-text"><?php echo esc_html__( 'Add Currency', 'qoin-graph' ); ?></legend>
 			<div class="form-field">
 				<label for="currency-code"><?php echo esc_html__( 'Currency Code', 'qoin-graph' ); ?></label>
