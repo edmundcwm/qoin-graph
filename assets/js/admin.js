@@ -102,7 +102,7 @@
 
 		if ( window.confirm( 'Are you sure you want to delete this currency?' ) ) { //eslint-disable-line no-alert
 			try {
-				event.target.classList.toggle( 'disabled' );
+				event.target.classList.add( 'disabled' );
 				const response = await fetch( url, {
 					method: 'DELETE',
 					headers: {
@@ -127,7 +127,7 @@
 				// Display error message.
 				console.error( err.message );
 			} finally {
-				event.target.classList.toggle( 'disabled' );
+				event.target.classList.remove( 'disabled' );
 			}
 		}
 	}
