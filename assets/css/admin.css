@@ -1,0 +1,21 @@
+.field-section {
+    margin-bottom: 2em;
+}
+
+.field-section--sm {
+    max-width: 400px;;
+}
+
+.form-field {
+    display: flex;
+    margin-bottom: 2em;
+}
+
+.form-field > * {
+    flex-basis: 50%;
+}
+
+.form-field label {
+    font-weight: 600;
+    line-height: 2;
+}
