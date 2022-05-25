@@ -10,6 +10,22 @@
 		return;
 	}
 
+	const currencyTableObj = {
+		el: currencyTable,
+		handleEvents() {
+			this.el.addEventListener( 'click', handleDeleteCurrency );
+		},
+		hasRows() {
+			return this.el.querySelectorAll( '.currency-row:not(.hidden)' ).length;
+		},
+		hide() {
+			this.el.classList.add( 'hidden' );
+		},
+		show() {
+			this.el.classList.remove( 'hidden' );
+		},
+	};
+
 	const endpoint = '/wp-json/qoin-graph/v1/currencies';
 	const url = qoinGraphSettings.root + endpoint;
 
@@ -65,9 +81,6 @@
 
 			// Add new row to the Currencies table after a successful response
 			if ( response.ok ) {
-				// Display table if it's currently hidden.
-				currencyTable.classList.remove( 'hidden' );
-
 				const newRow = createNewCurrencyRow();
 
 				if ( ! newRow ) {
@@ -75,6 +88,11 @@
 				}
 
 				tableBody.appendChild( newRow );
+
+				// Display currency table.
+				if ( currencyTableObj.hasRows() ) {
+					currencyTableObj.show();
+				}
 
 				// Clear input fields
 				currencyCodeEl.value = '';
@@ -122,6 +140,11 @@
 					if ( rowEl.classList.contains( 'currency-row' ) ) {
 						rowEl.remove();
 					}
+
+					// Hide currency table if there are no more currencies.
+					if ( ! currencyTableObj.hasRows() ) {
+						currencyTableObj.hide();
+					}
 				}
 			} catch ( err ) {
 				// Display error message.
@@ -133,5 +156,5 @@
 	}
 
 	addCurrencyBtn.addEventListener( 'click', handleAddCurrency );
-	currencyTable.addEventListener( 'click', handleDeleteCurrency );
+	currencyTableObj.handleEvents();
 }() );
