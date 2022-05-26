@@ -27,6 +27,24 @@ function enqueue_admin_scripts() {
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 
 /**
+ * Enqueue front-end scripts and styles.
+ */
+function enqueue_scripts() {
+	$currencies = \QoinGraph\Utils\get_currencies();
+
+	wp_enqueue_script( 'qoin-graph-frontend', plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array(), '1.0.0', true );
+	wp_add_inline_script(
+		'qoin-graph-frontend',
+		sprintf(
+			'var qoinGraphCurrencies = %s',
+			wp_json_encode( $currencies ),
+		),
+		'before'
+	);
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_scripts' );
+
+/**
  * Add custom REST route to handle retrieving and updating of various Qoin Graph settings.
  */
 function qoin_graph_rest_route() {
