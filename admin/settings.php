@@ -74,7 +74,7 @@ function settings_api_init() {
  */
 function currencies_section_callback() {
 	$settings   = get_option( OPTION_NAME );
-	$currencies = isset( $settings['currencies'] ) ? $settings['currencies'] : array();
+	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
 
 	?>
 	<p><?php echo esc_html__( 'Add or remove currencies.', 'qoin-graph' ); ?></p>
@@ -83,21 +83,21 @@ function currencies_section_callback() {
 			<legend class="screen-reader-text"><?php echo esc_html__( 'Add Currency', 'qoin-graph' ); ?></legend>
 			<div class="form-field">
 				<label for="currency-code"><?php echo esc_html__( 'Currency Code', 'qoin-graph' ); ?></label>
-				<input type="text" size="10" id="currency-code" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][code]' ); ?>" class="input" aria-required="true">
+				<input type="text" size="10" id="currency-code" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][code]' ); ?>" class="input" required>
 			</div>
 			<div class="form-field">
 				<label for="currency-symbol"><?php echo esc_html__( 'Currency Symbol', 'qoin-graph' ); ?></label>
-				<input type="text" size="10" id="currency-symbol" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][symbol]' ); ?>" class="input" aria-required="true">
+				<input type="text" size="10" id="currency-symbol" name="<?php echo esc_attr( \QoinGraph\OPTION_NAME . '[currencies][symbol]' ); ?>" class="input" required>
 			</div>
-			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary" data-code=""><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
+			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary"><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
 		</fieldset>
-		<!-- Only display table if at least one currency has been added -->
 		<div id="new-currency-notice" class="notice notice-success is-dismissible hidden" role="alert" tabindex="-1">
 			<p class="notice-message"></p>
 			<button type="button" class="notice-dismiss">
 				<span class="screen-reader-text">Dismiss this notice.</span>
 			</button>
 		</div>
+		<!-- Only display table if at least one currency has been added -->
 		<table id="currency-table" class="wp-list-table widefat fixed striped table-view-list <?php echo empty( $currencies ) ? 'hidden' : ''; ?>">
 			<thead>
 				<tr>
