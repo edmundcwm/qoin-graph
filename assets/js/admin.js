@@ -10,6 +10,11 @@
 		return;
 	}
 
+	const formInputs = {
+		currencyCode: currencyCodeEl,
+		currencySymbol: currencySymbolEl,
+	};
+
 	const currencyTableObj = {
 		el: currencyTable,
 		handleEvents() {
@@ -55,10 +60,32 @@
 	}
 
 	/**
+	 * Basic validation that checks for empty inputs.
+	 *
+	 * @return {boolean}} validation result.
+	 */
+	function validateInputs() {
+		for ( const input in formInputs ) {
+			if ( ! formInputs[ input ].value ) {
+				formInputs[ input ].focus();
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Handle adding of new currency.
 	 */
 	async function handleAddCurrency() {
 		if ( addCurrencyBtn.classList.contains( 'disabled' ) ) {
+			return;
+		}
+
+		const validate = validateInputs();
+
+		if ( ! validate ) {
 			return;
 		}
 
