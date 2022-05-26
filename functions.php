@@ -54,8 +54,7 @@ function qoin_graph_rest_route() {
  * GET method callback.
  */
 function get_qoin_graph_currencies() {
-	$settings = get_option( OPTION_NAME );
-	return ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	return \QoinGraph\Utils\get_currencies();
 }
 
 /**
@@ -91,8 +90,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\\qoin_graph_rest_route' );
  * @param \WP_REST_Request $request REST request.
  */
 function delete_qoin_graph_currencies( $request ) {
-	$settings   = get_option( OPTION_NAME, array() );
-	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	$currencies = \QoinGraph\Utils\get_currencies();
 	
 	if ( empty( $currencies ) ) {
 		return new \WP_Error( 'cant-delete', __( 'No currencies to delete.', 'qoin-graph' ), array( 'status' => 404 ) );
