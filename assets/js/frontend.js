@@ -16,7 +16,6 @@
 		currency: currencyDropdown?.value || 'AUD',
 		dataFrequency: 'hour', // this needs to be a data attribute on the frequency toggle.
 		errors: {},
-		isLoading: false,
 	};
 
 	const baseUrl = 'https://stagingshop.qoin.world/'; //! temporary for now. Will need to use current site url
@@ -72,7 +71,6 @@
 
 	// Handles fetching from all API endpoints.
 	async function fetchAllResources() {
-		showLoader();
 		const { qoinData, currency } = appState;
 		const endDate = new Date().toLocaleDateString( 'en-CA' ); // this locale gives us the date in yyyy-mm-dd format.
 		const historicDayParams = { startDate: getStartDate( 'day' ), endDate, frequency: 'day' };
@@ -84,6 +82,8 @@
 		const fetchHistoricMonth = getPrice( historicMonthParams );
 
 		try {
+			showLoader();
+
 			// Wait for all endpoints to resolve.
 			const [ dayResponse, hourResponse, monthResponse ] = await Promise.all( [ fetchHistoricDay, fetchHistoricHour, fetchHistoricMonth ] );
 
