@@ -32,6 +32,8 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' )
 function enqueue_scripts() {
 	$currencies = \QoinGraph\Utils\get_currencies();
 
+	wp_enqueue_style( 'qoin-graph-frontend-styles', plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', array(), '1.0.0' );
+
 	wp_register_script( 'qoin-graph-chart-js', plugin_dir_url( __FILE__ ) . 'assets/js/vendor/chart.min.js', array(), '3.8.0', true );
 	wp_register_script( 'qoin-graph-frontend', plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array( 'qoin-graph-chart-js' ), '1.0.0', true );
 	wp_add_inline_script(
