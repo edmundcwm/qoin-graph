@@ -209,6 +209,11 @@
 		// Remove first item from historical data.
 		historical.shift();
 
+		historical = historical.map( function( value ) {
+			value.currencyRate = value.currencyRate.toFixed( 3 );
+			return value;
+		} );
+
 		return historical;
 	}
 
