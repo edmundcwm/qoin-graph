@@ -106,15 +106,6 @@
 				month: formattedMonthResp.historic,
 			};
 
-			// Only cache data if there is no error.
-			// if ( ! Object.keys( errors ).length ) {
-			// 	// Save responses to localstorage.
-			// 	cacheData( dataToCache );
-
-			// 	// Set a 5 min expiration for the data in local storage.
-			// 	setWithExpiry( 300000 );
-			// }
-
 			// Update App state.
 			Object.keys( dataToCache ).forEach( function( key ) {
 				qoinData[ currency ] = { ...qoinData[ currency ], [ key ]: dataToCache[ key ] };
@@ -260,17 +251,43 @@
 		const labels = [];
 		const { dataFrequency, qoinData, currency } = appState;
 
-		console.log( qoinData );
-		// if ( ! ( dataFrequency in qoinData ) ) {
-		// 	return;
-		// }
-
 		if ( ! Object.keys( qoinData ).length ) {
 			return;
 		}
 
 		const ctx = document.getElementById( 'qcpw-chart' );
 		ctx.classList.add( 'active' );
+
+		// Chart options.
+		const options = {
+			plugins: {
+				legend: {
+					display: false,
+				},
+				tooltip: {
+					mode: 'index',
+					intersect: false,
+					displayColors: false,
+					callbacks: {
+						label( tooltipItem ) {
+							// Display price in the tooltip.
+							return '$' + Number( tooltipItem.formattedValue );
+						},
+					},
+				},
+			},
+			scales: {
+				y: {
+					title: {
+						display: true,
+						text: 'Qoin Value in ' + currency,
+					},
+					ticks: {
+						precision: 2,
+					},
+				},
+			},
+		};
 
 		// Retrieve historical data from state and use them as datasets.
 		qoinData[ currency ][ dataFrequency ].forEach( function( data ) {
@@ -286,6 +303,8 @@
 		if ( appState.qoinChart instanceof Chart ) { // eslint-disable-line no-undef
 			appState.qoinChart.data.datasets[ 0 ].data = dataSet;
 			appState.qoinChart.data.labels = labels;
+			appState.qoinChart.options = options;
+
 			appState.qoinChart.update();
 			return;
 		}
@@ -305,26 +324,7 @@
 					pointBackgroundColor: '#434F64',
 				} ],
 			},
-			options: {
-				plugins: {
-					legend: {
-						display: false,
-					},
-					tooltip: {
-						mode: 'index',
-						intersect: false,
-						displayColors: false,
-						callbacks: {
-							label( tooltipItem ) {
-								// Display price in the tooltip.
-								return '$' + Number( tooltipItem.formattedValue );
-							},
-						},
-					},
-				},
-				scales: { x: { display: false }, y: { display: false } },
-
-			},
+			options,
 		} );
 	}
 
