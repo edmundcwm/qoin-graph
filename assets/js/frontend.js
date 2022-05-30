@@ -5,7 +5,8 @@
 ( function() {
 	const currencyDropdown = document.getElementById( 'currency-dropdown' );
 	const frequencyToggles = document.querySelectorAll( '[data-frequency]' );
-	const loader = document.getElementById( 'loader' );
+	const loader = document.getElementById( 'qg-loader' );
+	const chart = document.getElementById( 'qg-chart' );
 	const appState = {
 		qoinData: {},
 		qoinChart: {}, // we need to store the chart instance for each currency
@@ -59,10 +60,12 @@
 
 	function showLoader() {
 		loader.classList.remove( 'hidden' );
+		chart.classList.add( 'inactive' );
 	}
 
 	function hideLoader() {
 		loader.classList.add( 'hidden' );
+		chart.classList.remove( 'inactive' );
 	}
 
 	// Handles fetching from all API endpoints.
@@ -273,9 +276,6 @@
 			return;
 		}
 
-		const ctx = document.getElementById( 'qg-chart' );
-		ctx.classList.add( 'active' );
-
 		// Chart options.
 		const options = {
 			plugins: {
@@ -340,7 +340,7 @@
 		}
 
 		// Initialise Chart.
-		appState.qoinChart = new Chart( ctx, { //eslint-disable-line no-undef
+		appState.qoinChart = new Chart( chart, { //eslint-disable-line no-undef
 			type: 'line',
 			data: {
 				labels,
