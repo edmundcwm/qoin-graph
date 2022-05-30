@@ -2,13 +2,9 @@
  * Core functionality of the Qoin Crypto Pricing Widget.
  */
 
-/**
- * TODO:
- * - Loader state
- * - Cache value
- */
 ( function() {
 	const currencyDropdown = document.getElementById( 'currency-dropdown' );
+	const frequencyToggles = document.querySelectorAll( '[data-frequency]' );
 	const loader = document.getElementById( 'loader' );
 	const appState = {
 		qoinData: {},
@@ -245,6 +241,23 @@
 	}
 
 	/**
+	 * Render toggle's active/inactive state.
+	 */
+	function renderToggleState() {
+		if ( ! frequencyToggles ) {
+			return;
+		}
+
+		frequencyToggles.forEach( function( toggle ) {
+			if ( appState.dataFrequency === toggle.dataset.frequency ) {
+				toggle.classList.add( 'active' );
+			} else {
+				toggle.classList.remove( 'active' );
+			}
+		} );
+	}
+
+	/**
 	 * Render Chart.
 	 */
 	function renderChart() {
@@ -260,7 +273,7 @@
 			return;
 		}
 
-		const ctx = document.getElementById( 'qcpw-chart' );
+		const ctx = document.getElementById( 'qg-chart' );
 		ctx.classList.add( 'active' );
 
 		// Chart options.
@@ -344,7 +357,28 @@
 	}
 
 	function render() {
+		renderToggleState();
 		renderChart();
+	}
+
+	// Event handler for frequency toggle.
+	function handleFrequencyToggle() {
+		if ( ! frequencyToggles ) {
+			return;
+		}
+
+		frequencyToggles.forEach( function( toggle ) {
+			// Set active toggle based on default frequency on initial load.
+			renderToggleState();
+
+			toggle.addEventListener( 'click', function( e ) {
+				e.preventDefault();
+				// Update dataFrequency state.
+				appState.dataFrequency = this.dataset.frequency;
+
+				render();
+			} );
+		} );
 	}
 
 	function handleCurrencyChange() {
@@ -359,6 +393,7 @@
 	 * Register all event handlers.
 	 */
 	function registerEvents() {
+		handleFrequencyToggle();
 		handleCurrencyChange();
 	}
 
