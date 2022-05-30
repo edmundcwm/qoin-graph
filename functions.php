@@ -32,12 +32,14 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' )
 function enqueue_scripts() {
 	$currencies = \QoinGraph\Utils\get_currencies();
 
-	wp_enqueue_script( 'qoin-graph-frontend', plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array(), '1.0.0', true );
+	wp_register_script( 'qoin-graph-chart-js', plugin_dir_url( __FILE__ ) . 'assets/js/vendor/chart.min.js', array(), '3.8.0', true );
+	wp_register_script( 'qoin-graph-frontend', plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array( 'qoin-graph-chart-js' ), '1.0.0', true );
 	wp_add_inline_script(
 		'qoin-graph-frontend',
 		sprintf(
-			'var qoinGraphCurrencies = %s',
+			'var qoinGraphCurrencies = %s; rootUrl= %s',
 			wp_json_encode( $currencies ),
+			wp_json_encode( get_site_url() ),
 		),
 		'before'
 	);
@@ -88,7 +90,7 @@ function update_qoin_graph_currencies( $request ) {
 	}
  
 	$settings   = get_option( OPTION_NAME, array() );
-	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	$currencies = \QoinGraph\Utils\get_currencies();
 
 	if ( isset( $currencies[ $values['currencyCode'] ] ) ) {
 		return new \WP_Error( 'cant-add', __( 'Currency already exists.', 'qoin-graph' ), array( 'status' => 404 ) );
@@ -108,6 +110,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\\qoin_graph_rest_route' );
  * @param \WP_REST_Request $request REST request.
  */
 function delete_qoin_graph_currencies( $request ) {
+	$settings   = get_option( 'qoin_graph_settings', array() );
 	$currencies = \QoinGraph\Utils\get_currencies();
 	
 	if ( empty( $currencies ) ) {
