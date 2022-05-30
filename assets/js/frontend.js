@@ -282,6 +282,12 @@
 				},
 			},
 			scales: {
+				x: {
+					ticks: {
+						maxTicksLimit: 10, // number of labels on the x-axis
+						maxRotation: 0,
+					},
+				},
 				y: {
 					title: {
 						display: true,
@@ -299,9 +305,15 @@
 			dataSet.push( data.currencyRate );
 
 			// Retrieve date from ISOString format and use it as label.
-			const date = data.valuationDate.split( 'T' )[ 0 ];
+			const date = new Date( data.valuationDate.split( 'T' )[ 0 ] );
+			if ( ! ( date instanceof Date ) || isNaN( date ) ) {
+				// Should display error here?
+				return;
+			}
+			// Format to use for date - 30 Apr 22.
+			const formattedDate = date.toLocaleString( 'default', { year: '2-digit', month: 'short', day: 'numeric' } );
 
-			labels.push( date );
+			labels.push( formattedDate );
 		} );
 
 		// Update chart with new data if Chart has already been drawn.
