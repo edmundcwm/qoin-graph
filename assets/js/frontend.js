@@ -14,7 +14,7 @@
 		qoinData: {},
 		qoinChart: {}, // we need to store the chart instance for each currency
 		currency: currencyDropdown?.value || 'AUD',
-		dataFrequency: 'hour', // this needs to be a data attribute on the frequency toggle.
+		dataFrequency: 'month', // this needs to be a data attribute on the frequency toggle.
 		errors: {},
 	};
 
