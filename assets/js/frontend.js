@@ -288,8 +288,9 @@
 					displayColors: false,
 					callbacks: {
 						label( tooltipItem ) {
+							const currencySymbol = 'undefined' !== qoinGraphCurrencies && qoinGraphCurrencies[ currency ] ? qoinGraphCurrencies[ currency ] : '$'; //eslint-disable-line no-undef
 							// Display price in the tooltip.
-							return '$' + Number( tooltipItem.formattedValue );
+							return currencySymbol + Number( tooltipItem.formattedValue ); // TODO refactor this. CHeck if qoinGraphCurrencies exist
 						},
 					},
 				},
