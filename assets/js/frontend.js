@@ -247,8 +247,13 @@
 			},
 		};
 
+		const availableData = qoinData?.[ currency ]?.[ dataFrequency ];
+
+		if ( undefined === availableData ) {
+			return;
+		}
 		// Retrieve historical data from state and use them as datasets.
-		qoinData[ currency ][ dataFrequency ].forEach( function( data ) {
+		availableData.forEach( function( data ) {
 			dataSet.push( data.currencyRate );
 
 			// Retrieve date from ISOString format and use it as label.
