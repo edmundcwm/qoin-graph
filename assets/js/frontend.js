@@ -11,13 +11,20 @@
 		qoinData: {},
 		qoinChart: {}, // we need to store the chart instance for each currency
 		currency: currencyDropdown?.value || 'AUD',
-		dataFrequency: 'month', // this needs to be a data attribute on the frequency toggle.
+		dataFrequency: '1M', // this needs to be a data attribute on the frequency toggle.
 		errors: {},
 	};
 
 	const baseUrl = 'https://stagingshop.qoin.world/'; //! temporary for now. Will need to use current site url
 
-	async function getPrice( { ...args } ) {
+	const frequenciesObj = [
+		createFrequency( 1, '1M' ), // One Month
+		createFrequency( 3, '3M' ), // Three Month
+		createFrequency( 6, '6M' ), // Six Month
+		createFrequency( 9139081023, 'all' ), // All Time
+	];
+
+	function fetchData( { ...args } ) {
 		const endpoint = 'wp-json/qoin-wp/v1/exchange-rate/' + appState.currency; // TODO should this be retrieved from Settings?
 		let requestUrl = baseUrl + endpoint;
 		// prepare params for date-based retrieval.
@@ -32,30 +39,19 @@
 	}
 
 	/**
-	 * Utility function to retrieve start date based on frequency.
+	 * Utility function to retrieve a date based on X number of months before the current date.
 	 *
-	 * @param {string} frequency
-	 * @return {string} Start date in yyyy-mm-dd format
+	 * @param {number} numOfMonthsPrior - number of months before the current date.
+	 * @return {string|boolean} Start date in yyyy-mm-dd format or false if error.
 	 */
-	function getStartDate( frequency = 'day' ) {
-		let startDate = '';
-		switch ( frequency ) {
-			case 'hour':
-				startDate = new Date();
-				startDate.setDate( startDate.getDate() - 1 );
-				break;
+	function getStartDate( numOfMonthsPrior ) {
+		const startDate = new Date();
+		const month = startDate.getMonth() - parseInt( numOfMonthsPrior );
 
-			case 'day':
-				startDate = new Date();
-				startDate.setDate( startDate.getDate() - 7 );
-				break;
+		startDate.setMonth( month );
 
-			case 'month':
-				startDate = new Date();
-				startDate.setMonth( startDate.getMonth() - 1 );
-				break;
-		}
-		return startDate.toLocaleDateString( 'en-CA' );
+		// Ensure startDate is a valid date before formatting it.
+		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toLocaleDateString( 'en-CA' ) : false;
 	}
 
 	function showLoader() {
@@ -68,46 +64,55 @@
 		chart.classList.remove( 'inactive' );
 	}
 
+	/**
+	 * Factory function for creating a frequency object
+	 *
+	 * @param {number} numberOfMonths
+	 * @param {number} id
+	 * @return  {Object} Frequency object
+	 */
+	function createFrequency( numberOfMonths, id ) {
+		const startDate = getStartDate( numberOfMonths );
+
+		if ( ! startDate ) {
+			// TODO: Should we remove the frequency toggle if we can't get a start date?
+			return false;
+		}
+
+		const frequency = 'day';
+		const endDate = new Date().toLocaleDateString( 'en-CA' ); // this locale gives us the date in yyyy-mm-dd
+
+		return {
+			endpointParams: {
+				startDate,
+				endDate,
+				frequency,
+			},
+			id,
+		};
+	}
+
 	// Handles fetching from all API endpoints.
 	async function fetchAllResources() {
 		const { qoinData, currency } = appState;
-		const endDate = new Date().toLocaleDateString( 'en-CA' ); // this locale gives us the date in yyyy-mm-dd format.
-		const historicDayParams = { startDate: getStartDate( 'day' ), endDate, frequency: 'day' };
-		const historicHourParams = { startDate: getStartDate( 'hour' ), endDate, frequency: 'hour' };
-		const historicMonthParams = { startDate: getStartDate( 'month' ), endDate, frequency: 'day' };
-		// Fetch from both historic endpoints concurrently.
-		const fetchHistoricDay = getPrice( historicDayParams );
-		const fetchHistoricHour = getPrice( historicHourParams );
-		const fetchHistoricMonth = getPrice( historicMonthParams );
-
 		try {
 			showLoader();
 
-			// Wait for all endpoints to resolve.
-			const [ dayResponse, hourResponse, monthResponse ] = await Promise.all( [ fetchHistoricDay, fetchHistoricHour, fetchHistoricMonth ] );
+			// Remove frequencies that are invalid then fetch data.
+			const fetchAllData = frequenciesObj.filter( Boolean ).map( function( frequencyParam ) {
+				return fetchData( frequencyParam.endpointParams );
+			} );
 
-			//  We only need the historic property for both Hourly and Monthly data.
-			const historicHourResponse = Object.assign( {}, hourResponse );
-			const historicMonthResponse = Object.assign( {}, monthResponse );
-			delete historicHourResponse.current;
-			delete historicMonthResponse.current;
+			const responses = await Promise.all( fetchAllData );
 
-			// Format responses.
-			const formattedDayResp = formatResponse( dayResponse );
-			const formattedHourResp = formatResponse( historicHourResponse );
-			const formattedMonthResp = formatResponse( historicMonthResponse );
+			const formattedResponses = responses.map( function( response ) {
+				return formatResponse( response );
+			} );
 
-			// Prepare data for storing in local storage.
-			const dataToCache = {
-				current: formattedDayResp.current,
-				day: formattedDayResp.historic,
-				hour: formattedHourResp.historic,
-				month: formattedMonthResp.historic,
-			};
-
-			// Update App state.
-			Object.keys( dataToCache ).forEach( function( key ) {
-				qoinData[ currency ] = { ...qoinData[ currency ], [ key ]: dataToCache[ key ] };
+			formattedResponses.forEach( ( response, index ) => {
+				const frequencyId = frequenciesObj[ index ].id;
+				// Update App state.
+				qoinData[ currency ] = { ...qoinData[ currency ], [ frequencyId ]: response.historic };
 			} );
 
 			render();
@@ -132,7 +137,6 @@
 		const newRes = {};
 
 		const formatter = {
-			current: formatCurrentData,
 			historic: formatHistoricalData,
 		};
 
@@ -143,55 +147,6 @@
 		} );
 
 		return { ...res, ...newRes };
-	}
-
-	/**
-	 * Format current data to desired format.
-	 *
-	 * @param {Object} current
-	 * @return {Object} modified current data.
-	 */
-	function formatCurrentData( current ) {
-		const { price } = current;
-		const percentageChange = current[ '24h' ]; // This property name makes it tricky to destructure.
-		const data = {
-			currentPrice: {
-				hasError: false,
-				formatter: formatPrice,
-				value: price,
-			},
-			percentageChange: {
-				hasError: false,
-				formatter: formatPercentageChange,
-				value: percentageChange,
-			},
-		};
-
-		const formattedData = {
-			currentPrice: null,
-			percentageChange: null,
-		};
-
-		if ( isNaN( parseFloat( price ) ) ) {
-			appState.errors.currentPrice = 'Unable to retrieve current price. Please refresh.';
-			data.currentPrice.hasError = true;
-		}
-
-		if ( isNaN( parseFloat( percentageChange ) ) ) {
-			appState.errors.percentageChange = 'Unable to retrieve percentage change. Please refresh.';
-			data.percentageChange.hasError = true;
-		}
-
-		for ( const key in data ) {
-			// No errors. Proceed to format value.
-			if ( ! data[ key ].hasError ) {
-				formattedData[ key ] = data[ key ].formatter( data[ key ].value );
-
-				delete appState.errors[ key ];
-			}
-		}
-
-		return { ...current, price: formattedData.currentPrice, '24h': formattedData.percentageChange };
 	}
 
 	/**
@@ -209,38 +164,11 @@
 		historical.shift();
 
 		historical = historical.map( function( value ) {
-			value.currencyRate = value.currencyRate.toFixed( 3 );
+			value.currencyRate = value.currencyRate.toFixed( 3 ); // format values to three decimal place.
 			return value;
 		} );
 
 		return historical;
-	}
-
-	/**
-	 * A utility function to convert a value to 2 decimal places.
-	 *
-	 * @param {string} price
-	 * @return {number} formatted price
-	 */
-	function formatPrice( price ) {
-		if ( typeof price !== 'number' ) {
-			price = parseInt( price );
-		}
-
-		// A few things to do here:
-		// 1. Convert number to a float if necessary.
-		if ( Number.isInteger( price ) ) {
-			price = price / 1000000000000000000;
-		}
-		// 2. Convert float to two decimal places.
-		const formattedPrice = price.toFixed( 2 );
-
-		return formattedPrice;
-	}
-
-	function formatPercentageChange( value ) {
-		const formattedPercentageChange = Math.abs( value );
-		return formattedPercentageChange;
 	}
 
 	/**
