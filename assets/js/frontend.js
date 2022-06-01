@@ -223,6 +223,11 @@
 					},
 				},
 			},
+			elements: {
+				point: {
+					radius: 0,
+				},
+			},
 			scales: {
 				x: {
 					ticks: {
