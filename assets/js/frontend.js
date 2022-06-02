@@ -21,7 +21,9 @@
 		createFrequency( 1, '1M' ), // One Month
 		createFrequency( 3, '3M' ), // Three Month
 		createFrequency( 6, '6M' ), // Six Month
-		createFrequency( 9139081023, 'all' ), // All Time
+		// All time. This is a special case. We don't know what the exact number of months to go back to get all data.
+		// The trick is to use a large number so the API will return data from X months ago, which is likely going to be everything.
+		createFrequency( 999, 'all' ),
 	];
 
 	function fetchData( { ...args } ) {
