@@ -301,7 +301,7 @@
 			scales: {
 				x: {
 					ticks: {
-						maxTicksLimit: 10, // number of labels on the x-axis
+						maxTicksLimit: window.matchMedia( '(max-width: 767px)' ).matches ? 5 : 10, // Show 5 labels on Mobile and 10 on Desktop.
 						maxRotation: 0,
 					},
 				},
