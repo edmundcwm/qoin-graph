@@ -16,7 +16,6 @@
 	};
 
 	const baseUrl = 'https://stagingshop.qoin.world/'; //! temporary for now. Will need to use current site url
-
 	const frequenciesObj = [
 		createFrequency( 1, '1M' ), // One Month
 		createFrequency( 3, '3M' ), // Three Month
@@ -94,6 +93,45 @@
 		};
 	}
 
+	/**
+	 * Handles storing of data into local storage.
+	 *
+	 * @param {Object} data API response.
+	 */
+	function cacheData( data = {} ) {
+		if ( ! Object.keys( data ).length ) {
+			return;
+		}
+
+		const localStorageData = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
+
+		// Prepare data for storing in Local Storage.
+		Object.keys( data ).forEach( function( currencyCode ) {
+			if ( ( currencyCode in localStorageData ) ) {
+				// Exit early if data is already in cache
+				return;
+			}
+
+			localStorage.setItem( 'qoinCurrencies', JSON.stringify( data ) );
+		} );
+	}
+
+	function maybeFetchResources() {
+		// check if data is in cache.
+		const dataFromCache = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
+		const { qoinData, currency } = appState;
+
+		if ( dataFromCache && currency in dataFromCache ) {
+			// Update app state if data is in cache.
+			qoinData[ currency ] = dataFromCache[ currency ];
+
+			render();
+			return;
+		}
+
+		fetchAllResources();
+	}
+
 	// Handles fetching from all API endpoints.
 	async function fetchAllResources() {
 		const { qoinData, currency } = appState;
@@ -116,6 +154,8 @@
 				// Update App state.
 				qoinData[ currency ] = { ...qoinData[ currency ], [ frequencyId ]: response.historic };
 			} );
+
+			cacheData( qoinData );
 
 			render();
 		} catch ( err ) {
@@ -251,9 +291,10 @@
 
 		const availableData = qoinData?.[ currency ]?.[ dataFrequency ];
 
-		if ( undefined === availableData ) {
+		if ( ! availableData ) {
 			return;
 		}
+
 		// Retrieve historical data from state and use them as datasets.
 		availableData.forEach( function( data ) {
 			dataSet.push( data.currencyRate );
@@ -326,7 +367,7 @@
 		currencyDropdown.addEventListener( 'change', function() {
 			appState.currency = this.value;
 
-			fetchAllResources();
+			maybeFetchResources();
 		} );
 	}
 
@@ -343,7 +384,7 @@
 	 */
 	function init() {
 		registerEvents();
-		fetchAllResources();
+		maybeFetchResources();
 	}
 
 	init();
