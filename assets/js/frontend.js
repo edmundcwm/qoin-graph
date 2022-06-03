@@ -116,12 +116,38 @@
 		} );
 	}
 
+	/**
+	 * Handles storing of data expiration time in local storage.
+	 * This is used to determine whether to re-fetch data from API.
+	 *
+	 * @param {number} ttl Time to live.
+	 */
+	function setWithExpiry( ttl = 0 ) {
+		const now = new Date().getTime();
+
+		localStorage.setItem( 'qoinCurrencies_expiry', now + ttl );
+	}
+
+	/**
+	 * Check whether data in local storage has expired.
+	 */
+	function hasDataExpired() {
+		const expiry = localStorage.getItem( 'qoinCurrencies_expiry' );
+		const now = new Date().getTime();
+
+		if ( null === expiry || now >= expiry ) {
+			return true;
+		}
+
+		return false;
+	}
+
 	function maybeFetchResources() {
 		// check if data is in cache.
 		const dataFromCache = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
 		const { qoinData, currency } = appState;
 
-		if ( dataFromCache && currency in dataFromCache ) {
+		if ( dataFromCache && currency in dataFromCache && ! hasDataExpired() ) {
 			// Update app state if data is in cache.
 			qoinData[ currency ] = dataFromCache[ currency ];
 
@@ -156,6 +182,8 @@
 			} );
 
 			cacheData( qoinData );
+			// Set a 1 hour expiration for the data in local storage.
+			setWithExpiry( 60 * 60 * 1000 );
 
 			render();
 		} catch ( err ) {
