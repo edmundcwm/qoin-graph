@@ -39,7 +39,7 @@ function shortcode_callback() {
 			</div>
 		</div>
 		<div class="qg-body">
-			<img class="" id="qg-loader" src="<?php echo esc_url( get_admin_url() . 'images/loading.gif' ); ?>" alt="loading" />
+			<img class="hidden" id="qg-loader" src="<?php echo esc_url( get_admin_url() . 'images/loading.gif' ); ?>" alt="loading" />
 			<canvas id="qg-chart" width="340" height="100"></canvas>
 		</div>
 	</div>
