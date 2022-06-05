@@ -25,4 +25,5 @@ const OPTION_NAME  = 'qoin_graph_settings';
 require_once plugin_dir_path( __FILE__ ) . 'utils.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'functions.php';
+require_once plugin_dir_path( __FILE__ ) . 'public/api/rest-routes.php';
 require_once plugin_dir_path( __FILE__ ) . 'public/qoin-graph.php';
