@@ -42,7 +42,6 @@ function render_settings_page() {
 		<form method="post" class="country-rollout-form" action="options.php">
 			<?php settings_fields( \QoinGraph\OPTION_GROUP ); ?>
 			<?php do_settings_sections( 'qoin-graph-settings' ); ?>
-			<?php //submit_button(); ?>
 		</form>
 	</div>
 	<?php
