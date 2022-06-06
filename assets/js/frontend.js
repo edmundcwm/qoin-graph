@@ -5,17 +5,19 @@
 ( function() {
 	const currencyDropdown = document.getElementById( 'currency-dropdown' );
 	const frequencyToggles = document.querySelectorAll( '[data-frequency]' );
+	const errorMessageEl = document.getElementById( 'qg-error' );
 	const loader = document.getElementById( 'qg-loader' );
 	const chart = document.getElementById( 'qg-chart' );
+	const chartBodyEl = document.querySelector( '.qg-chart-wrapper' );
 	const appState = {
 		qoinData: {},
 		qoinChart: {}, // we need to store the chart instance for each currency
 		currency: currencyDropdown?.value || 'AUD',
 		dataFrequency: '1M', // this needs to be a data attribute on the frequency toggle.
-		errors: {},
+		error: '',
+		isLoading: false,
 	};
 
-	const baseUrl = 'https://stagingshop.qoin.world/'; //! temporary for now. Will need to use current site url
 	const frequenciesObj = [
 		createFrequency( 1, '1M' ), // One Month
 		createFrequency( 3, '3M' ), // Three Month
@@ -26,7 +28,8 @@
 	];
 
 	function fetchData( { ...args } ) {
-		const endpoint = 'wp-json/qoin-wp/v1/exchange-rate/' + appState.currency; // TODO should this be retrieved from Settings?
+		const baseUrl = qoinGraphRootUrl; //eslint-disable-line no-undef
+		const endpoint = '/wp-json/qoin-wp/v1/exchange-rate/' + appState.currency; // TODO should this be retrieved from Settings?
 		let requestUrl = baseUrl + endpoint;
 		// prepare params for date-based retrieval.
 		if ( Object.keys( args ).length ) {
@@ -55,14 +58,22 @@
 		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toLocaleDateString( 'en-CA' ) : false;
 	}
 
-	function showLoader() {
-		loader.classList.remove( 'hidden' );
-		chart.classList.add( 'inactive' );
+	/**
+	 * Utility function to show element
+	 *
+	 * @param {HTMLElement} el
+	 */
+	function showElement( el ) {
+		el.classList.remove( 'hidden' );
 	}
 
-	function hideLoader() {
-		loader.classList.add( 'hidden' );
-		chart.classList.remove( 'inactive' );
+	/**
+	 * Utility function to hide element
+	 *
+	 * @param {HTMLElement} el
+	 */
+	function hideElement( el ) {
+		el.classList.add( 'hidden' );
 	}
 
 	/**
@@ -143,6 +154,7 @@
 	}
 
 	function maybeFetchResources() {
+		appState.error = '';
 		// check if data is in cache.
 		const dataFromCache = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
 		const { qoinData, currency } = appState;
@@ -162,7 +174,10 @@
 	async function fetchAllResources() {
 		const { qoinData, currency } = appState;
 		try {
-			showLoader();
+			appState.isLoading = true;
+			appState.error = '';
+
+			render();
 
 			// Remove frequencies that are invalid then fetch data.
 			const fetchAllData = frequenciesObj.filter( Boolean ).map( function( frequencyParam ) {
@@ -187,9 +202,10 @@
 
 			render();
 		} catch ( err ) {
-			console.log( err );
+			appState.error = err.message;
 		} finally {
-			hideLoader();
+			appState.isLoading = false;
+			render();
 		}
 	}
 
@@ -262,6 +278,10 @@
 	 * Render Chart.
 	 */
 	function renderChart() {
+		// hide error
+		hideElement( errorMessageEl );
+		hideElement( loader );
+
 		if ( 'function' !== typeof Chart ) {
 			return;
 		}
@@ -273,6 +293,8 @@
 		if ( ! Object.keys( qoinData ).length ) {
 			return;
 		}
+
+		chartBodyEl.classList.remove( 'hidden' );
 
 		// Chart options.
 		const options = {
@@ -343,6 +365,7 @@
 		if ( appState.qoinChart instanceof Chart ) { // eslint-disable-line no-undef
 			appState.qoinChart.data.datasets[ 0 ].data = dataSet;
 			appState.qoinChart.data.labels = labels;
+
 			appState.qoinChart.options = options;
 
 			appState.qoinChart.update();
@@ -366,7 +389,37 @@
 		} );
 	}
 
+	/**
+	 * Render loading state.
+	 */
+	function renderLoading() {
+		showElement( loader );
+		hideElement( chartBodyEl );
+		hideElement( errorMessageEl );
+	}
+
+	/**
+	 * Render error state.
+	 */
+	function renderError() {
+		errorMessageEl.textContent = appState.error;
+		showElement( errorMessageEl );
+		hideElement( loader );
+		hideElement( chartBodyEl );
+	}
+
 	function render() {
+		if ( appState.isLoading ) {
+			// Loading state.
+			renderLoading();
+			return;
+		}
+		if ( appState.error ) {
+			// Error state.
+			renderError();
+			return;
+		}
+
 		renderToggleState();
 		renderChart();
 	}
