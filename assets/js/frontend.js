@@ -356,7 +356,9 @@
 				return;
 			}
 			// Format to use for date - 30 Apr 22.
-			const formattedDate = date.toLocaleString( 'default', { year: '2-digit', month: 'short', day: 'numeric' } );
+			const localeDate = date.toLocaleString( 'default', { year: '2-digit', month: 'short', day: 'numeric' } );
+			const dateElementsArr = localeDate.split( ' ' );
+			const formattedDate = [ dateElementsArr[ 0 ] + ' ' + dateElementsArr[ 1 ], dateElementsArr[ 2 ] ]; // Results in a line break i.e., 3 May <br> 22.
 
 			labels.push( formattedDate );
 		} );
