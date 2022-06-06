@@ -39,7 +39,7 @@ function enqueue_scripts() {
 	wp_add_inline_script(
 		'qoin-graph-frontend',
 		sprintf(
-			'var qoinGraphCurrencies = %s; rootUrl= %s',
+			'var qoinGraphCurrencies = %s, qoinGraphRootUrl = %s;',
 			wp_json_encode( $currencies ),
 			wp_json_encode( get_site_url() ),
 		),
