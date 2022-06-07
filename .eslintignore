@@ -1,0 +1,6 @@
+**/*.min.js
+**/bin/**
+**/node_modules/**
+**/vendor/**
+build/*
+built/*
