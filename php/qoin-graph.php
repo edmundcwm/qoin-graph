@@ -7,6 +7,8 @@
 
 namespace QoinGraph;
 
+// TODO Clean up database when deleting plugin
+
 /**
  * Shortcode for rendering Qoin Graph.
  */
