@@ -1,3 +1,7 @@
+.qg-wrapper {
+    position: relative;
+}
+
 .qg-header {
     display: flex;
 }
