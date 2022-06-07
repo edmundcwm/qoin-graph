@@ -298,6 +298,7 @@
 
 		// Chart options.
 		const options = {
+			maintainAspectRatio: false,
 			plugins: {
 				legend: {
 					display: false,
