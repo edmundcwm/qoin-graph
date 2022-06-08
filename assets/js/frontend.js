@@ -270,7 +270,15 @@
 		historical.shift();
 
 		historical = historical.map( function( value ) {
+			// All these properties are not in used.
+			delete value.currencyFrom;
+			delete value.exchangeRate;
+			delete value.rangeDate;
+			delete value.rateDate;
+			delete value.tokenValue;
+
 			value.currencyRate = value.currencyRate.toFixed( 3 ); // format values to three decimal place.
+
 			return value;
 		} );
 
