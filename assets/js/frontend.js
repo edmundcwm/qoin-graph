@@ -114,17 +114,7 @@
 			return;
 		}
 
-		const localStorageData = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
-
-		// Prepare data for storing in Local Storage.
-		Object.keys( data ).forEach( function( currencyCode ) {
-			if ( ( currencyCode in localStorageData ) ) {
-				// Exit early if data is already in cache
-				return;
-			}
-
-			localStorage.setItem( 'qoinCurrencies', JSON.stringify( data ) );
-		} );
+		localStorage.setItem( 'qoinCurrencies', JSON.stringify( data ) );
 	}
 
 	/**
