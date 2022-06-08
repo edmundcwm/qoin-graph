@@ -184,8 +184,12 @@
 			} );
 
 			cacheData( qoinData );
-			// Set a 1 hour expiration for the data in local storage.
-			setWithExpiry( 60 * 60 * 1000 );
+
+			// Do nothing if there is already an existing expiry date.
+			if ( ! localStorage.getItem( 'qoinCurrencies_expiry' ) ) {
+				// Set a 1 hour expiration for the data in local storage.
+				setWithExpiry( 60 * 60 * 1000 );
+			}
 
 			render();
 		} catch ( err ) {
