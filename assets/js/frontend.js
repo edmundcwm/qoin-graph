@@ -179,6 +179,15 @@
 
 			formattedResponses.forEach( ( response, index ) => {
 				const frequencyId = frequenciesObj[ index ].id;
+
+				// Historic values do not give us the current Qoin Price. So we need to append current price to the end of historic values.
+				const currentPrice = {
+					valuationDate: new Date().toISOString(),
+					currencyRate: formatPrice( response.current.price ),
+				};
+
+				response.historic.push( currentPrice );
+
 				// Update App state.
 				qoinData[ currency ] = { ...qoinData[ currency ], [ frequencyId ]: response.historic };
 			} );
@@ -224,6 +233,26 @@
 		} );
 
 		return { ...res, ...newRes };
+	}
+
+	/**
+	 * A utility function to convert a value to 2 decimal places.
+	 *
+	 * @param {string} price
+	 * @return {number} formatted price
+	 */
+	function formatPrice( price ) {
+		if ( typeof price !== 'number' ) {
+			price = parseInt( price );
+		}
+
+		// A few things to do here:
+		// 1. Convert number to a float if necessary.
+		if ( Number.isInteger( price ) ) {
+			price = price / 1000000000000000000;
+		}
+		// 2. Convert float to two decimal places.
+		return price.toFixed( 3 );
 	}
 
 	/**
