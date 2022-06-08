@@ -1,0 +1,12 @@
+{
+  "name": "qoin-graph",
+  "version": "1.0.0",
+  "description": "Qoin Graph plugin",
+  "keywords": [],
+  "author": "XWP <info@xwp.co>",
+  "license": "ISC",
+  "devDependencies": {
+    "@wordpress/eslint-plugin": "^12.4.0",
+    "eslint": "^8.17.0"
+  }
+}
