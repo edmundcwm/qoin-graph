@@ -155,14 +155,10 @@
 
 	function maybeFetchResources() {
 		appState.error = '';
-		// check if data is in cache.
-		const dataFromCache = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
 		const { qoinData, currency } = appState;
 
-		if ( dataFromCache && currency in dataFromCache && ! hasDataExpired() ) {
-			// Update app state if data is in cache.
-			qoinData[ currency ] = dataFromCache[ currency ];
-
+		if ( qoinData && currency in qoinData && ! hasDataExpired() ) {
+			// Cache is still valid. Don't fetch from API.
 			render();
 			return;
 		}
@@ -173,6 +169,7 @@
 	// Handles fetching from all API endpoints.
 	async function fetchAllResources() {
 		const { qoinData, currency } = appState;
+
 		try {
 			appState.isLoading = true;
 			appState.error = '';
@@ -456,6 +453,14 @@
 	}
 
 	/**
+	 * Update state based on cached values.
+	 */
+	function primeStateFromCache() {
+		const dataFromCache = JSON.parse( localStorage.getItem( 'qoinCurrencies' ) ) || {};
+		appState.qoinData = dataFromCache;
+	}
+
+	/**
 	 * Register all event handlers.
 	 */
 	function registerEvents() {
@@ -467,6 +472,7 @@
 	 * Initialise widget.
 	 */
 	function init() {
+		primeStateFromCache();
 		registerEvents();
 		maybeFetchResources();
 	}
