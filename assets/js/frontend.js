@@ -200,15 +200,16 @@
 				qoinData[ currency ] = { ...qoinData[ currency ], [ frequencyId ]: response.historic };
 			} );
 
+			//TODO should not cache empty object.
+
 			cacheData( qoinData );
 
-			// Do nothing if there is already an existing expiry date.
-			if ( ! localStorage.getItem( 'qoinCurrencies_expiry' ) ) {
-				// Set a 1 hour expiration for the data in local storage.
+			// When fetching new currency we do not want to reset the current cache expiry time.
+			// It should only be set if the cache does not exist or if it has already expired.
+			if ( ! localStorage.getItem( 'qoinCurrencies_expiry' ) || hasDataExpired() ) {
+			// Set a 1 hour expiration for the data in local storage.
 				setWithExpiry( 60 * 60 * 1000 );
 			}
-
-			render();
 		} catch ( err ) {
 			appState.error = err.message;
 		} finally {
