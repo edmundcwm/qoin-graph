@@ -27,19 +27,28 @@
 		createFrequency( 999, 'all' ),
 	];
 
-	function fetchData( { ...args } ) {
-		const baseUrl = qoinGraphRootUrl; //eslint-disable-line no-undef
-		const endpoint = '/wp-json/qoin-wp/v1/exchange-rate/' + appState.currency; // TODO should this be retrieved from Settings?
-		let requestUrl = baseUrl + endpoint;
-		// prepare params for date-based retrieval.
-		if ( Object.keys( args ).length ) {
-			const params = Object.values( args ).join( '/' );
-			requestUrl += '/' + params;
-		}
+	async function fetchData( { ...args } ) {
+		try {
+			const baseUrl = qoinGraphRootUrl; //eslint-disable-line no-undef
+			const endpoint = '/wp-json/qoin-wp/v1/exchange-rate/' + appState.currency; // TODO should this be retrieved from Settings?
+			let requestUrl = baseUrl + endpoint;
+			// prepare params for date-based retrieval.
+			if ( Object.keys( args ).length ) {
+				const params = Object.values( args ).join( '/' );
+				requestUrl += '/' + params;
+			}
 
-		return fetch( requestUrl, {
-			method: 'GET',
-		} ).then( ( res ) => res.json() );
+			const response = await fetch( requestUrl, {
+				method: 'GET',
+			} );
+
+			if ( ! response.ok ) {
+				throw Error( 'Error fetching data' );
+			}
+			return response.json();
+		} catch ( err ) {
+			throw err;
+		}
 	}
 
 	/**
@@ -172,7 +181,6 @@
 			} );
 
 			const responses = await Promise.all( fetchAllData );
-
 			const formattedResponses = responses.map( function( response ) {
 				return formatResponse( response );
 			} );
