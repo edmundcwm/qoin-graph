@@ -11,6 +11,7 @@ namespace QoinGraph;
  * Shortcode for rendering Qoin Graph.
  */
 function shortcode_callback() {
+	wp_enqueue_style( 'qoin-graph-frontend-styles' );
 	wp_enqueue_script( 'qoin-graph-frontend' );
 
 	$currencies = \QoinGraph\Utils\get_currencies();

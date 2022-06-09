@@ -32,7 +32,7 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' )
 function enqueue_scripts() {
 	$currencies = \QoinGraph\Utils\get_currencies();
 
-	wp_enqueue_style( 
+	wp_register_style( 
 		'qoin-graph-frontend-styles', 
 		plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', 
 		array(),
