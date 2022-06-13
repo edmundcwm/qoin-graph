@@ -168,7 +168,6 @@
 	// Handles fetching from all API endpoints.
 	async function fetchAllResources() {
 		if ( hasDataExpired() ) {
-			// TODO Try to replicate the bug where current price is only available for AUS. Other currencies still show the previous day as the latest
 			// Reset state.
 			appState.qoinData = {};
 		}
