@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 const OPTION_GROUP = 'qoin_graph_group_settings';
 const OPTION_NAME  = 'qoin_graph_settings';
 
-require_once plugin_dir_path( __FILE__ ) . 'utils.php';
+require_once plugin_dir_path( __FILE__ ) . 'php/utils.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'functions.php';
 require_once plugin_dir_path( __FILE__ ) . 'php/api/rest-routes.php';
