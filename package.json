@@ -4,9 +4,14 @@
   "description": "Qoin Graph plugin",
   "keywords": [],
   "author": "XWP <info@xwp.co>",
-  "license": "ISC",
+  "license": "GPLv3",
+  "scripts": {
+    "dev": "npx mix --mix-config=mix-config/webpack.mix.js watch",
+    "build": "npx mix --mix-config=mix-config/webpack.mix.js --production"
+  },
   "devDependencies": {
     "@wordpress/eslint-plugin": "^12.4.0",
-    "eslint": "^8.17.0"
+    "eslint": "^8.17.0",
+    "laravel-mix": "^6.0.43"
   }
 }
