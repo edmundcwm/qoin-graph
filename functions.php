@@ -7,11 +7,16 @@
 
 namespace QoinGraph;
 
+use function QoinGraph\Utils\get_min_suffix;
+
 /**
  * Enqueue admin-related scripts and styles.
  */
 function enqueue_admin_scripts() {
-	wp_enqueue_script( 'qoin-graph-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
+	
+	$min = get_min_suffix();
+
+	wp_enqueue_script( 'qoin-graph-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.' . $min . 'js', array( 'jquery' ), '1.0.0', true );
 	wp_add_inline_script(
 		'qoin-graph-admin',
 		sprintf(
@@ -22,7 +27,7 @@ function enqueue_admin_scripts() {
 		'before'
 	);
 
-	wp_enqueue_style( 'qoin-graph-admin-styles', plugin_dir_url( __FILE__ ) . 'assets/css/admin.css', array(), '1.0.0' );
+	wp_enqueue_style( 'qoin-graph-admin-styles', plugin_dir_url( __FILE__ ) . 'assets/css/admin.' . $min . 'css', array(), '1.0.0' );
 }
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 
@@ -30,21 +35,22 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' )
  * Enqueue front-end scripts and styles.
  */
 function enqueue_scripts() {
+	$min        = get_min_suffix();
 	$currencies = \QoinGraph\Utils\get_currencies();
 
 	wp_register_style( 
 		'qoin-graph-frontend-styles', 
-		plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', 
+		plugin_dir_url( __FILE__ ) . 'assets/css/frontend.' . $min . 'css', 
 		array(),
-		filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/frontend.css' ),
+		filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/frontend.' . $min . 'css' ),
 	);
 
 	wp_register_script( 'qoin-graph-chart-js', plugin_dir_url( __FILE__ ) . 'assets/js/vendor/chart.min.js', array(), '3.8.0', true );
 	wp_register_script( 
 		'qoin-graph-frontend', 
-		plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', 
+		plugin_dir_url( __FILE__ ) . 'assets/js/frontend.' . $min . 'js', 
 		array( 'qoin-graph-chart-js' ), 
-		filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/frontend.js' ),
+		filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/frontend.' . $min . 'js' ),
 		true 
 	);
 	wp_add_inline_script(

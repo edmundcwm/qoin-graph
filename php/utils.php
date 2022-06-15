@@ -15,3 +15,15 @@ function get_currencies() {
 	
 	return ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
 }
+
+/**
+ * Get suffix of minified scripts.
+ *
+ * @return string
+ */
+function get_min_suffix() {
+	$is_debug_mode = defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG;
+	$min           = $is_debug_mode ? '' : 'min.';
+
+	return $min;
+}
