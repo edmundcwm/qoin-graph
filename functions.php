@@ -13,7 +13,6 @@ use function QoinGraph\Utils\get_min_suffix;
  * Enqueue admin-related scripts and styles.
  */
 function enqueue_admin_scripts() {
-	
 	$min = get_min_suffix();
 
 	wp_enqueue_script( 'qoin-graph-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.' . $min . 'js', array( 'jquery' ), '1.0.0', true );
@@ -26,8 +25,11 @@ function enqueue_admin_scripts() {
 		),
 		'before'
 	);
-
-	wp_enqueue_style( 'qoin-graph-admin-styles', plugin_dir_url( __FILE__ ) . 'assets/css/admin.' . $min . 'css', array(), '1.0.0' );
+	
+	// Enqueue stylesheet only in plugin admin screen.
+	if ( isset( $_GET['page'] ) && MENU_SLUG === $_GET['page'] ) {
+		wp_enqueue_style( 'qoin-graph-admin-styles', plugin_dir_url( __FILE__ ) . 'assets/css/admin.' . $min . 'css', array(), '1.0.0' );
+	}
 }
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_admin_scripts' );
 

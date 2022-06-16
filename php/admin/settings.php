@@ -7,6 +7,7 @@
 
 namespace QoinGraph\Admin;
 
+use const QoinGraph\MENU_SLUG;
 use const QoinGraph\OPTION_NAME;
 
 /**
@@ -20,7 +21,7 @@ function init_admin_menu() {
 		__( 'Qoin Graph', 'qoin-graph' ),
 		__( 'Qoin Graph', 'qoin-graph' ),
 		'manage_options',
-		'qoin-graph-settings',
+		MENU_SLUG,
 		__NAMESPACE__ . '\render_settings_page',
 		'dashicons-admin-generic'
 	);
@@ -33,15 +34,13 @@ function init_admin_menu() {
  * @return void
  */
 function render_settings_page() {
-	$menu_settings_page = menu_page_url( 'qoin-graph-settings', false );
-
 	?>
 	<div class="wrap">
 		<h2 class="wc-table-list-header"><?php echo esc_html__( 'Qoin Graph', 'qoin-graph' ); ?></h2>
 
 		<form method="post" class="country-rollout-form" action="options.php">
 			<?php settings_fields( \QoinGraph\OPTION_GROUP ); ?>
-			<?php do_settings_sections( 'qoin-graph-settings' ); ?>
+			<?php do_settings_sections( MENU_SLUG ); ?>
 		</form>
 	</div>
 	<?php
@@ -64,7 +63,7 @@ function settings_api_init() {
 		'qoin-graph-currencies-section',
 		__( 'Currencies', 'qoin-graph' ),
 		__NAMESPACE__ . '\currencies_section_callback',
-		'qoin-graph-settings',
+		MENU_SLUG,
 	);
 }
 

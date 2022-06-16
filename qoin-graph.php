@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 const OPTION_GROUP = 'qoin_graph_group_settings';
 const OPTION_NAME  = 'qoin_graph_settings';
+const MENU_SLUG    = 'qoin-graph-settings';
 
 require_once plugin_dir_path( __FILE__ ) . 'php/utils.php';
 require_once plugin_dir_path( __FILE__ ) . 'php/admin/settings.php';
