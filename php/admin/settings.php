@@ -89,11 +89,8 @@ function currencies_section_callback() {
 			</div>
 			<button type="button" name="add-new-currency" id="add-new-currency" class="button button-secondary"><?php echo esc_html__( 'Add New Currency', 'qoin-graph' ); ?></button>
 		</fieldset>
-		<div id="new-currency-notice" class="notice notice-success is-dismissible hidden" role="alert" tabindex="-1">
+		<div id="new-currency-notice" class="notice hidden" role="alert" tabindex="-1">
 			<p class="notice-message"></p>
-			<button type="button" class="notice-dismiss">
-				<span class="screen-reader-text">Dismiss this notice.</span>
-			</button>
 		</div>
 		<!-- Only display table if at least one currency has been added -->
 		<table id="currency-table" class="wp-list-table widefat fixed striped table-view-list <?php echo empty( $currencies ) ? 'hidden' : ''; ?>">

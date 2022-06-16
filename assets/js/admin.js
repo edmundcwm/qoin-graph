@@ -6,9 +6,12 @@
 	const currencyCodeEl = document.getElementById( 'currency-code' );
 	const currencySymbolEl = document.getElementById( 'currency-symbol' );
 
-	if ( ! addCurrencyBtn || ! currencyTable || ! rowClone || ! tableBody || ! currencyCodeEl || ! currencySymbolEl || undefined === qoinGraphSettings.root ) {
+	if ( ! addCurrencyBtn || ! currencyTable || ! rowClone || ! tableBody || ! currencyCodeEl || ! currencySymbolEl || undefined === qoinGraphSettings.root ) { // eslint-disable-line no-undef
 		return;
 	}
+
+	const noticeWrapper = document.getElementById( 'new-currency-notice' );
+	const messageEl = noticeWrapper.querySelector( '.notice-message' );
 
 	const formInputs = {
 		currencyCode: currencyCodeEl,
@@ -32,7 +35,21 @@
 	};
 
 	const endpoint = '/wp-json/qoin-graph/v1/currencies';
-	const url = qoinGraphSettings.root + endpoint;
+	const url = qoinGraphSettings.root + endpoint; //eslint-disable-line no-undef
+
+	/**
+	 * Show notice.
+	 *
+	 * @param {string} message
+	 * @param {string} type
+	 */
+	function showNotice( message, type = 'success' ) {
+		if ( messageEl ) {
+			noticeWrapper.classList.add( 'notice-' + type );
+			noticeWrapper.classList.remove( 'hidden' );
+			messageEl.textContent = message;
+		}
+	}
 
 	/**
 	 * Create a new row in the currency table.
@@ -124,10 +141,13 @@
 				// Clear input fields
 				currencyCodeEl.value = '';
 				currencySymbolEl.value = '';
+
+				showNotice( 'Currency added successfully.' );
+			} else {
+				throw new Error( 'An error has occurred. Unable to add currency.' );
 			}
 		} catch ( err ) {
-			//TODO display error notice.
-			console.error( err.message );
+			showNotice( err.message, 'error' );
 		} finally {
 			addCurrencyBtn.classList.remove( 'disabled' );
 		}
@@ -172,10 +192,13 @@
 					if ( ! currencyTableObj.hasRows() ) {
 						currencyTableObj.hide();
 					}
+
+					showNotice( 'Currency deleted successfully.' );
+				} else {
+					throw new Error( 'An error has occurred. Unable to delete currency.' );
 				}
 			} catch ( err ) {
-				// Display error message.
-				console.error( err.message );
+				showNotice( err.message, 'error' );
 			} finally {
 				event.target.classList.remove( 'disabled' );
 			}
