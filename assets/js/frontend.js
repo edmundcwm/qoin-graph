@@ -64,7 +64,7 @@
 		startDate.setMonth( month );
 
 		// Ensure startDate is a valid date before formatting it.
-		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toLocaleDateString( 'en-CA' ) : false;
+		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toISOString().substring(0, 10) : false;
 	}
 
 	/**
@@ -101,7 +101,7 @@
 		}
 
 		const frequency = 'day';
-		const endDate = new Date().toLocaleDateString( 'en-CA' ); // this locale gives us the date in yyyy-mm-dd
+		const endDate = new Date().toISOString().substring(0 , 10); // this locale gives us the date in yyyy-mm-dd
 
 		return {
 			endpointParams: {
