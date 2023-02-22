@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Qoin Graph
  * Description: A Graphical representation of Qoin pricings.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: XWP
  * Author URI: https://xwp.co
  * License: GPL3
