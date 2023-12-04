@@ -1,3 +1,4 @@
+/.gitattributes export-ignore
 /.eslintignore export-ignore
 /.eslintrc.json export-ignore
 /.gitignore export-ignore
@@ -6,7 +7,7 @@
 /.npmrc export-ignore
 /.nvmrc export-ignore
 /mix-config export-ignore
-/.package-lock.json export-ignore
-/.package.json export-ignore
-/.mix-manifiest.json export-ignore
+/package-lock.json export-ignore
+/package.json export-ignore
+/mix-manifiest.json export-ignore
 
