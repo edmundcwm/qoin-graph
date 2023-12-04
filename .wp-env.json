@@ -1,0 +1,9 @@
+{
+	"core": null,
+	"plugins": [ "." ],
+    "config": {
+        "QOIN_PRICE_LIVE_API": "a6RbFQflh929xPQxvAvol3bkeaHSg5EYawxdJgd5",
+        "QOIN_PRICE_24H_API": "oScQnMjbqu6gVvUOOSGn62l2coG0CJlN9Uys2pz5",
+        "QOIN_PRICE_HISTORY_API": "vKNSaCiKEb3yM2nz66zyraiJqCeLWlAS62I4GjTn"
+    }
+}

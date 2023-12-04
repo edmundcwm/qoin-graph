@@ -7,9 +7,12 @@
   "license": "GPLv3",
   "scripts": {
     "dev": "npx mix --mix-config=mix-config/webpack.mix.js watch",
-    "build": "npx mix --mix-config=mix-config/webpack.mix.js --production"
+    "build": "npx mix --mix-config=mix-config/webpack.mix.js --production",
+    "start": "wp-env start",
+    "stop": "wp-env stop"
   },
   "devDependencies": {
+    "@wordpress/env": "^8.13.0",
     "@wordpress/eslint-plugin": "^12.4.0",
     "eslint": "^8.17.0",
     "laravel-mix": "^6.0.43"
