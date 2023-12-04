@@ -25,7 +25,6 @@ function init_admin_menu() {
 		__NAMESPACE__ . '\render_settings_page',
 		'dashicons-admin-generic'
 	);
-
 }
 
 /**
@@ -54,9 +53,9 @@ function settings_api_init() {
 	register_setting(
 		\QoinGraph\OPTION_GROUP,
 		\QoinGraph\OPTION_NAME,
-		array(
+		[
 			'sanitize_callback' => __NAMESPACE__ . '\sanitize',
-		),
+		],
 	);
 
 	add_settings_section(
@@ -72,7 +71,7 @@ function settings_api_init() {
  */
 function currencies_section_callback() {
 	$settings   = get_option( OPTION_NAME );
-	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	$currencies = ! empty( $settings['currencies'] ) ? $settings['currencies'] : [];
 
 	?>
 	<p><?php echo esc_html__( 'Add or remove currencies.', 'qoin-graph' ); ?></p>
@@ -142,7 +141,7 @@ function sanitize( $values ) {
 		return $values;
 	}
 
-	$current_settings                                 = get_option( OPTION_NAME ) ?: array();
+	$current_settings                                 = get_option( OPTION_NAME ) ?: [];
 	$currency_code                                    = sanitize_text_field( $values['currencies']['code'] );
 	$currency_symbol                                  = sanitize_text_field( $values['currencies']['symbol'] );
 	$current_settings['currencies'][ $currency_code ] = $currency_symbol;

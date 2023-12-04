@@ -11,9 +11,9 @@ namespace QoinGraph\Utils;
  * Retrieve a list of currencies.
  */
 function get_currencies() {
-	$settings = get_option( \QoinGraph\OPTION_NAME, array() );
+	$settings = get_option( \QoinGraph\OPTION_NAME, [] );
 	
-	return ! empty( $settings['currencies'] ) ? $settings['currencies'] : array();
+	return ! empty( $settings['currencies'] ) ? $settings['currencies'] : [];
 }
 
 /**

@@ -9,38 +9,38 @@ namespace Qoin\API;
 
 add_action(
 	'rest_api_init',
-	function() {
+	function () {
 		register_rest_route(
 			'qoin-wp/v1',
 			'/exchange-rate/(?P<currency>[A-Z]+)(?:\/(?P<start_date>[0-9-]+))?(?:\/(?P<end_date>[0-9-]+))?(?:\/(?P<frequency>[a-z]+))?',
-			array(
+			[
 				'methods'  => 'GET',
 				'callback' => 'Qoin\API\get_exchange_rate',
-				'args'     => array(
-					'currency'   => array(
-						'validate_callback' => function( $param, $request, $key ) {
+				'args'     => [
+					'currency'   => [
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_string( $param );
 						},
-					),
-					'start_date' => array(
-						'validate_callback' => function( $param, $request, $key ) {
+					],
+					'start_date' => [
+						'validate_callback' => function ( $param, $request, $key ) {
 							$d = \DateTime::createFromFormat( 'Y-m-d', $param );
 							return $d && $d->format( 'Y-m-d' ) === $param;
 						},
-					),
-					'end_date'   => array(
-						'validate_callback' => function( $param, $request, $key ) {
+					],
+					'end_date'   => [
+						'validate_callback' => function ( $param, $request, $key ) {
 							$d = \DateTime::createFromFormat( 'Y-m-d', $param );
 							return $d && $d->format( 'Y-m-d' ) === $param;
 						},
-					),
-					'frequency'  => array(
-						'validate_callback' => function( $param, $request, $key ) {
+					],
+					'frequency'  => [
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_string( $param );
 						},
-					),
-				),
-			)
+					],
+				],
+			]
 		);
 	}
 );
@@ -92,13 +92,13 @@ function get_exchange_rate( $request_data ) {
 		wp_cache_set( 'qoin_pricing_endpoint_24h_' . $currency, $qoin_24h_price, '', wp_rand( 3 * MINUTE_IN_SECONDS, 5 * MINUTE_IN_SECONDS ) );
 	}
 
-	$response = array(
-		'current' => array(
+	$response = [
+		'current' => [
 			'currency' => $currency,
 			'price'    => $qoin_current_price,
 			'24h'      => $qoin_24h_price,
-		),
-	);
+		],
+	];
 
 	// For AUD we want to retrieve the Qoin price from BTX as well.
 	// Since we need the live price, no caching is needed.
@@ -121,7 +121,7 @@ function get_exchange_rate( $request_data ) {
 			return new \WP_Error( 400, __( 'Invalid Frequency', 'qoin' ) );
 		}
 
-		$historic              = array();
+		$historic              = [];
 		$historic['start']     = sanitize_text_field( $request_data['start_date'] );
 		$historic['end']       = sanitize_text_field( $request_data['end_date'] );
 		$historic['frequency'] = sanitize_text_field( $request_data['frequency'] );
@@ -159,12 +159,12 @@ function get_qoin_price_data( $request_url, $api_key, $historic = false ) {
 
 	$request = wp_remote_get(
 		$request_url,
-		array(
-			'headers' => array(
+		[
+			'headers' => [
 				'x-api-key'    => $api_key,
 				'Content-Type' => 'application/json',
-			),
-		)
+			],
+		]
 	);
 
 	$body = wp_remote_retrieve_body( $request );
