@@ -5,4 +5,8 @@
 /.wp-env.json export-ignore
 /.npmrc export-ignore
 /.nvmrc export-ignore
+/mix-config export-ignore
+/.package-lock.json export-ignore
+/.package.json export-ignore
+/.mix-manifiest.json export-ignore
 
