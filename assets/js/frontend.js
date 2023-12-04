@@ -13,15 +13,12 @@
 		qoinData: {},
 		qoinChart: {}, // we need to store the chart instance for each currency
 		currency: currencyDropdown?.value || 'AUD',
-		dataFrequency: '1M', // this needs to be a data attribute on the frequency toggle.
+		dataFrequency: 'all', // this needs to be a data attribute on the frequency toggle.
 		error: '',
 		isLoading: false,
 	};
 
 	const frequenciesObj = [
-		createFrequency( 1, '1M' ), // One Month
-		createFrequency( 3, '3M' ), // Three Month
-		createFrequency( 6, '6M' ), // Six Month
 		// All time. This is a special case. We don't know what the exact number of months to go back to get all data.
 		// The trick is to use a large number so the API will return data from X months ago, which is likely going to be everything.
 		createFrequency( 999, 'all' ),
@@ -64,7 +61,7 @@
 		startDate.setMonth( month );
 
 		// Ensure startDate is a valid date before formatting it.
-		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toISOString().substring(0, 10) : false;
+		return startDate instanceof Date && ! isNaN( startDate ) ? startDate.toISOString().substring( 0, 10 ) : false;
 	}
 
 	/**
@@ -73,7 +70,7 @@
 	 * @param {HTMLElement} el
 	 */
 	function showElement( el ) {
-		el.classList.remove( 'hidden' );
+		el.classList.remove( 'qg-hidden' );
 	}
 
 	/**
@@ -82,7 +79,7 @@
 	 * @param {HTMLElement} el
 	 */
 	function hideElement( el ) {
-		el.classList.add( 'hidden' );
+		el.classList.add( 'qg-hidden' );
 	}
 
 	/**
@@ -101,7 +98,7 @@
 		}
 
 		const frequency = 'day';
-		const endDate = new Date().toISOString().substring(0 , 10); // this locale gives us the date in yyyy-mm-dd
+		const endDate = new Date().toISOString().substring( 0, 10 ); // this locale gives us the date in yyyy-mm-dd
 
 		return {
 			endpointParams: {
@@ -155,7 +152,6 @@
 	function maybeFetchResources() {
 		appState.error = '';
 		const { qoinData, currency } = appState;
-
 		if ( qoinData && currency in qoinData && ! hasDataExpired() ) {
 			// Cache is still valid. Don't fetch from API.
 			render();
@@ -219,6 +215,7 @@
 			appState.error = err.message;
 		} finally {
 			appState.isLoading = false;
+
 			render();
 		}
 	}
@@ -336,7 +333,7 @@
 			return;
 		}
 
-		chartBodyEl.classList.remove( 'hidden' );
+		chartBodyEl.classList.remove( 'qg-hidden' );
 
 		// Chart options.
 		const options = {
